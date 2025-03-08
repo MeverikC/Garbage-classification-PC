@@ -1,0 +1,126 @@
+<!-- templates/dashboard.html -->
+{% extends "base.html" %}
+
+{% block title %}Garbage-仪表盘{% endblock %}
+
+{% block page_content %}
+<div>
+    <h2>仪表盘</h2>
+    <div class="container-dashboard mt-5" style="margin-top: 30px">
+        <!-- 用户使用次数统计图表 -->
+        <div class="card border-0 shadow-sm my-3" style="max-width: 100%;">
+            <div class="card-body">
+                <h4 class="mb-4 text-center">用户使用次数统计</h4>
+                <canvas id="userStatsChart" width="300" height="300"></canvas>
+            </div>
+        </div>
+
+        <!-- 模型生成总数与准确率图表 -->
+        <div class="card border-0 shadow-sm my-3" style="max-width: 100%;">
+            <div class="card-body">
+                <h4 class="mb-4 text-center">模型生成总数</h4>
+                <canvas id="modelStatsChart" width="300" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // 获取 Flask 传递的数据
+        const userStats = {{ user_stats | tojson }};
+        const modelStats = {{ model_stats | tojson }};
+
+        // 动态生成颜色数组（根据用户数量）
+        const generateColors = (count) => {
+            const colors = [];
+            for (let i = 0; i < count; i++) {
+                const randomColor = `rgba(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, 0.2)`;
+                colors.push(randomColor);
+            }
+            return colors;
+        };
+
+        // 初始化用户使用次数统计图表
+        const userCtx = document.getElementById('userStatsChart').getContext('2d');
+        const userLabels = Object.keys(userStats); // 用户名作为标签
+        const userData = Object.values(userStats); // 使用次数作为数据
+        const userColors = generateColors(userLabels.length); // 动态生成颜色
+        const userStatsChart = new Chart(userCtx, {
+            type: 'bar',
+            data: {
+                labels: userLabels, // 用户名作为标签
+                datasets: [{
+                    label: '使用次数',
+                    data: userData, // 使用次数作为数据
+                    backgroundColor: userColors,
+                    borderColor: userColors.map(color => color.replace('0.2', '1')), // 边框颜色更鲜艳,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                onClick: (event, elements) => {
+                    // 点击事件处理
+                    if (elements.length > 0) {
+                        const clickedElementIndex = elements[0].index; // 获取点击的元素索引
+                        const username = userLabels[clickedElementIndex]; // 根据索引获取用户名
+                        // 调用后端接口，跳转到用户详情页面
+                        window.location.href = "{{ url_for('user_profile', username='PLACEHOLDER') }}".replace('PLACEHOLDER', username);
+                    }
+                }
+            }
+        });
+
+        // 初始化模型生成总数与成功数图表
+        const totalResults = modelStats.total_results;
+        const successNum = modelStats.success_num;
+        const failNum = totalResults - successNum; // 计算失败数
+        // 初始化模型生成总数与准确率图表
+        const modelCtx = document.getElementById('modelStatsChart').getContext('2d');
+        const modelStatsChart = new Chart(modelCtx, {
+            type: 'pie',
+            data: {
+                labels: ['总数', '成功数', '失败数'], // 标签
+                datasets: [{
+                    label: '模型统计',
+                    data: [totalResults, successNum, failNum], // 数据
+                    backgroundColor: [
+                        'rgba(54, 162, 235, 0.2)', // 蓝色：总数
+                        'rgba(75, 192, 192, 0.2)', // 绿色：成功数
+                        'rgba(255, 99, 132, 0.2)'  // 红色：失败数
+                    ],
+                    borderColor: [
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(255, 99, 132, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top', // 图例位置
+                    },
+                    tooltip: {
+                        enabled: true // 启用提示框
+                    }
+                }
+            }
+        });
+    </script>
+{% endblock %}

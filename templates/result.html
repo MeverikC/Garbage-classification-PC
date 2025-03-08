@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Garbage-识别结果{% endblock %}
+
+{% block page_content %}
+<div class="container mt-5" style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+    <h1 class="text-center mb-4">Predictions for
+        <img id="preview-image" style="max-width: 100px; max-height: 50px;" src="{{ url_for("static", filename='uploads/'+filename) }}" alt="点击预览"/>
+    </h1>
+
+    <ul class="list-group mb-4" style="width: 80%; margin-top: 25px;">
+        {% for prediction in predictions %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                {{ prediction.class }}
+                <span class="badge bg-primary rounded-pill">{{ prediction.confidence }}</span>
+            </li>
+        {% endfor %}
+    </ul>
+    <form id="select-form" enctype="multipart/form-data" class="form-custom" style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+        <div class="mb-3">
+            <label for="correct_result" class="form-label">选择正确的结果:</label>
+            <select name="correct_result" id="correct_result" class="form-control">
+                <option value="">无正确结果</option> <!-- 添加默认选项 -->
+                {% for prediction in predictions %}
+                    <option value="{{ prediction.class }}">{{ prediction.class }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="text-center">
+            <button type="submit" id="submit" class="btn btn-primary">提交</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+{% block scripts %}
+    {{ super() }}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.3/viewer.min.js"></script>
+    <script>
+        document.getElementById('select-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const correctResult = document.querySelector('select[name="correct_result"]').value;
+            console.log(correctResult);
+            fetch('/save_result', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    model_results: {{ predictions | tojson }},
+                    correct_result: correctResult,
+                    filename: {{ filename | tojson }}
+                })
+            }).then(response => {
+                if (response.redirected) {
+                    window.location.href = response.url; // 跟随重定向
+                }
+            });
+        })
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const image = document.getElementById("preview-image");
+            new Viewer(image, {
+                inline: false, // 不以内联模式显示
+                button: true,  // 显示关闭按钮
+                navbar: false, // 隐藏导航栏
+                title: false,  // 隐藏标题
+                toolbar: true, // 显示工具栏
+            });
+        });
+    </script>
+{% endblock %}

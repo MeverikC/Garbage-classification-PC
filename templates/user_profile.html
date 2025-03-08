@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %} Garbage-使用信息{% endblock %}
+
+{% block page_content %}
+<div>
+    <div class="container mt-5" style="margin-top: 25px;">
+        <h2 class="mb-4">用户使用信息</h2>
+        <div class="table-container" style="max-height: 500px; overflow-y: auto; margin-top: 25px; overflow-x: auto">
+            <table class="fixed-table table table-sm table-bordered table-hover" style="min-width: 1000px;">
+                <thead>
+                    <tr>
+                        <th style="vertical-align: middle;text-align: center">#</th>
+                        <th style="vertical-align: middle;text-align: center">用户</th>
+                        <th style="vertical-align: middle;text-align: center">模型结果</th>
+                        <th style="vertical-align: middle;text-align: center">用户结果</th>
+                        <th style="vertical-align: middle;text-align: center">上传图片</th>
+                        <th style="vertical-align: middle;text-align: center">创建时间</th>
+                    </tr>
+                </thead>
+                <tbody id="userTableBody" style="text-align: center;">
+                    {% for result in results %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td>{{ result.username }}</td>
+                            <td>
+                                <ol style="text-align: left;">
+                                    {% for res in result.model_results %}
+                                        <li>{{ res.class }}: {{ res.confidence }}</li>
+                                    {% endfor %}
+                                </ol>
+                            </td>
+                            <td>{{ result.correct_result }}</td>
+                            <td>
+                                <img style="max-width: 200px; max-height: 60px;display: block;margin: auto" class="preview-image" src="{{ url_for('static', filename='uploads/'+result.filename) }}" alt="用户图片" />
+                            </td>
+                            <td>{{ result.created_at }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.3/viewer.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const images = document.querySelectorAll(".preview-image");
+            images.forEach(image => {
+                image.addEventListener("click", function (){
+                    const viewer = new Viewer(image, {
+                        inline: false, // 不以内联模式显示
+                        button: true,  // 显示关闭按钮
+                        navbar: false, // 隐藏导航栏
+                        title: false,  // 隐藏标题
+                        toolbar: true, // 显示工具栏
+                        hidden: function () {
+                            // 在 Viewer.js 关闭时销毁实例，避免重复初始化
+                            viewer.destroy();
+                        }
+                    });
+                    // 手动触发预览
+                    viewer.show();
+                });
+            });
+        });
+    </script>
+{% endblock %}

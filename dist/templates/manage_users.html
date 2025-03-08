@@ -1,0 +1,205 @@
+<!-- templates/manage_users.html -->
+{% extends "base.html" %}
+
+{% block title %}Garbage-用户管理{% endblock %}
+
+{% block page_content %}
+<div>
+    <div class="container mt-5">
+        <h2 class="mb-4">用户列表</h2>
+        <div style="max-height: 500px; overflow-y: auto; margin-top: 25px;">
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th style="vertical-align: middle;text-align: center">#</th>
+                        <th style="vertical-align: middle;text-align: center">姓名</th>
+                        <th style="vertical-align: middle;text-align: center">角色</th>
+                        <th style="vertical-align: middle;text-align: center">创建时间</th>
+                        <th style="vertical-align: middle;text-align: center">更新时间</th>
+                        <th style="vertical-align: middle;text-align: center">操作</th>
+                    </tr>
+                </thead>
+                <tbody id="userTableBody">
+                    {% for username, user_data in users.items() %}
+                        <tr>
+                            <td style="vertical-align: middle;text-align: center">{{ loop.index }}</td>
+                            <td style="vertical-align: middle;text-align: center"><a href="{{ url_for('user_profile', username=username) }}">{{ username }}</a></td>
+                            <td style="vertical-align: middle;text-align: center">{{ user_data.role }}</td>
+                            <td style="vertical-align: middle;text-align: center">{{ user_data.created_at }}</td>
+                            <td style="vertical-align: middle;text-align: center">{{ user_data.updated_at }}</td>
+                            <td style="vertical-align: middle;text-align: center">
+                                <button class="btn btn-sm btn-warning me-2 btn-operate" onclick="openEditModal('{{ username }}', '{{ user_data.role }}')">
+                                    <img style="max-width: 15px" src="{{ url_for('static', filename='edit-btn.png') }}" alt="" />
+                                </button>
+                                <button class="btn btn-sm btn-danger btn-operate" onclick="delete_users('{{ username }}')">
+                                    <img style="max-width: 15px" src="{{ url_for('static', filename='delete-btn.png') }}" alt="" />
+                                </button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#userModal">添加用户</button>
+    </div>
+
+    <!-- 用户弹窗 -->
+    <div class="modal fade" data-backdrop="static" id="userModal" tabindex="-1" aria-labelledby="userModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="userModalLabel">添加用户</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="userForm">
+                        <div id="alert-container"></div>
+                        <input type="hidden" id="actionType" value="add">
+                        <input type="hidden" id="editUsername">
+                        <div class="mb-3">
+                            <label for="username" class="form-label">姓名</label>
+                            <input type="text" class="form-control" id="username" name="username" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">密码</label>
+                            <input type="password" class="form-control" id="password" name="password" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="role">角色</label>
+                            <select class="form-control" id="role" name="role" required>
+                              <option>user</option>
+                              <option>admin</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" onclick="submitUser()">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="deleteConfirmation" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="deleteConfirmationLabel">提示: </h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>确认删除?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id="deleteConfirmation-yes">确认</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script>
+        function openEditModal(username, role){
+            // 设置表单值
+            document.getElementById("actionType").value = "edit";
+            document.getElementById("editUsername").value = username;
+            document.getElementById("username").value = username;
+            document.getElementById("password").value = '';
+            document.getElementById("role").value = role;
+            document.getElementById('userModalLabel').innerText = '编辑用户';
+            $('#userModal').modal('show');
+        }
+
+        function showAlert(message) {
+            document.getElementById('alert-container').innerHTML = `<div id="customAlert" class="alert alert-danger" role="alert" style="display: block;">
+                <span id="alertMessage">${message}</span>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+            </div>`;
+        }
+
+        function submitUser(){
+            const actionType = document.getElementById("actionType").value;
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+            const role = document.getElementById("role").value;
+
+            if (!username || !password || !role) {
+                showAlert("所有字段都必须填写！");
+                return;
+            }
+
+            if (actionType === "add") {
+                // 添加用户逻辑
+                console.log("添加用户：", { username, password, role });
+                fetch('/add-users', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        username: username,
+                        password: password,
+                        role: role
+                    })
+                }).then(response => {
+                    if (response.redirected) {
+                        window.location.href = response.url; // 跟随重定向
+                    }
+                });
+            } else if (actionType === "edit") {
+                const editUsername = document.getElementById("editUsername").value;
+                // 编辑用户逻辑
+                fetch('/edit-users', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        editUsername: editUsername,
+                        username: username,
+                        password: password,
+                        role: role
+                    })
+                }).then(response => {
+                    if (response.redirected) {
+                        window.location.href = response.url; // 跟随重定向
+                    }
+                });
+            }
+
+            // 关闭弹窗
+            $('#userModal').modal('hide');
+
+            // 清空表单
+            document.getElementById("userForm").reset();
+            document.getElementById("actionType").value = "add";
+        }
+
+        function delete_users(username){
+            $('#deleteConfirmation').modal('show');
+
+            const confirmButton = document.getElementById('deleteConfirmation-yes');
+            confirmButton.onclick = function () {
+                // 调用后端删除接口
+                fetch('/delete-users', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: username })
+                }).then(response => {
+                    if (response.redirected) {
+                        window.location.href = response.url; // 跟随重定向
+                    }
+                });
+
+                // 关闭模态框
+                $('#deleteConfirmation').modal('hide');
+            };
+        }
+    </script>
+{% endblock %}

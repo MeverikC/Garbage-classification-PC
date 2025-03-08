@@ -1,0 +1,10 @@
+.venv
+.idea
+log
+垃圾图片库
+*.pth
+__pycahe__
+node_modules
+out/
+build
+*.exe
