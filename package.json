@@ -4,7 +4,8 @@
   "description": "garbage-deskapp",
   "main": "main.js",
   "scripts": {
-    "start": "electron .",
+    "dev": "cross-env NODE_ENV=development electron .",
+    "start": "cross-env NODE_ENV=backendBuild electron .",
     "build": "cross-env NODE_ENV=production electron-builder"
   },
   "author": "MeverikC",

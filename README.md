@@ -1,6 +1,6 @@
 # 垃圾分类桌面应用
 
-## 介绍
+## 1. 介绍
 1. 使用python+pytorch+efficientnet_b3实现
 2. web服务使用flask
 3. 使用electron打包成桌面应用
@@ -9,28 +9,34 @@
 > 2. nodejs 版本不低于 20
 > 
 
-## 下载依赖
+## 2. 下载依赖
 python: 3.12.3
 node: 20.9.0
 
-### 后端服务依赖
+### 2.1 后端服务依赖
 ```bash
-python -m venv venv
+python -m venv .venv
 vnev\Scripts\activate
 python.exe -m pip install --upgrade pip
 pip install -r .\requirements.txt
 ```
 
-### electron依赖
+### 2.2 electron依赖
 ```bash
 npm install
+# 若报错执行以下
 npm install --save-dev electron --electron-mirror=https://npmmirror.com/mirrors/electron/
 ```
 
-## 运行
+## 3. 运行 
+1. `npm run dev` => 开发环境
+2. `npm run start` => 后端服务打成`.exe`文件后
+3. `npm build` => 打包
+
+## 4. 打包
 使用 `electron-builder` 及 `pyinstaller` 工具实现打包
 
-## 打包后端
+### 4.1 打包后端
 1. 运行以下命令, 使用pyinstaller打包成exe文件
     ```bash
     pyinstaller -F -w --add-data "templates;templates" --add-data "static;static" --add-data "log;log" --add-data ".\.venv\Lib\site-packages\flask_bootstrap\templates;flask_bootstrap/templates" --icon="static/favicon.png" app.py
@@ -39,15 +45,15 @@ npm install --save-dev electron --electron-mirror=https://npmmirror.com/mirrors/
 3. 双击运行 `app.exe`
 4. 打开浏览器访问: `localhost:9000`, 此时即打包成功
 
-## 打包应用
+### 4.2 打包应用
 1. 安装 `electron-builder`
    ```bash
    npm install --save-dev electron-builder
    ```
 2. 执行 `npm run build`
+> ps: 一定先打包后端服务
 
-
-### electron-builder 详解
+### 4.3 electron-builder 详解
 package.json
 ```bash
 {

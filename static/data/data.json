@@ -1,0 +1,48 @@
+{
+    "users": {
+        "admin": [
+            {
+                "username": "admin",
+                "model_results": [
+                    {
+                        "class": "\u53ef\u56de\u6536\u7269_\u5730\u7403\u4eea",
+                        "confidence": "62.55%"
+                    },
+                    {
+                        "class": "\u53ef\u56de\u6536\u7269_\u7535\u8def\u677f",
+                        "confidence": "30.92%"
+                    },
+                    {
+                        "class": "\u53ef\u56de\u6536\u7269_\u8bdd\u7b52",
+                        "confidence": "3.58%"
+                    }
+                ],
+                "correct_result": "\u53ef\u56de\u6536\u7269_\u5730\u7403\u4eea",
+                "created_at": "2025-03-12",
+                "filename": "back.jpg"
+            }
+        ]
+    },
+    "results": [
+        {
+            "username": "admin",
+            "model_results": [
+                {
+                    "class": "\u53ef\u56de\u6536\u7269_\u5730\u7403\u4eea",
+                    "confidence": "62.55%"
+                },
+                {
+                    "class": "\u53ef\u56de\u6536\u7269_\u7535\u8def\u677f",
+                    "confidence": "30.92%"
+                },
+                {
+                    "class": "\u53ef\u56de\u6536\u7269_\u8bdd\u7b52",
+                    "confidence": "3.58%"
+                }
+            ],
+            "correct_result": "\u53ef\u56de\u6536\u7269_\u5730\u7403\u4eea",
+            "created_at": "2025-03-12",
+            "filename": "back.jpg"
+        }
+    ]
+}

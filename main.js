@@ -1,6 +1,5 @@
 const { app, BrowserWindow } = require("electron");
 const path = require("path");
-const isDev = process.env.NODE_ENV === 'development';
 
 let mainWindow = null;
 let subpy = null;
@@ -12,46 +11,32 @@ const PYTHON_EXECUTABLE_NAME = "python.exe";
 const APP_ICON_PATH = './static/favicon.png';
 
 const getPythonScriptPath = () => {
-  if (PY_DIST_FOLDER === '') {
-    if (PY_SRC_FOLDER === ''){
-      return path.join(__dirname, PY_MODULE);
-    }else {
-      return path.join(__dirname, PY_SRC_FOLDER, PY_MODULE);
-    }
+  if (process.env.NODE_ENV === 'development'){
+    return path.join(__dirname, PY_MODULE);
   }
-  if (process.platform === "win32") {
-    return path.join(
-      __dirname,
-      PY_DIST_FOLDER,
-      PY_MODULE.slice(0, -3) + ".exe"
-    );
-  }
-  return '';
-};
-
-const getPythonScriptPath2 = () => {
-  if (isDev) {
+  if (process.env.NODE_ENV === 'backendBuild') {
     // 开发环境直接使用项目目录
     return path.join(__dirname, PY_DIST_FOLDER, 'app.exe');
   }
-  // 生产环境使用解压后的资源目录
-  return path.join(process.resourcesPath, 'app', 'dist', 'app.exe');
+  if (process.env.NODE_ENV === 'production'){
+    // 生产环境使用解压后的资源目录
+    return path.join(process.resourcesPath, 'app', 'dist', 'app.exe');
+  }
+  return console.error(`Python subprocess error: 未指定环境`);
 };
 
 const startPythonSubprocess = () => {
-  console.log(getPythonScriptPath2());
-  if (PY_DIST_FOLDER === ''){
-    subpy = require("child_process").spawn('python', [getPythonScriptPath2()]);
+  if (process.env.NODE_ENV === 'development'){
+    subpy = require("child_process").spawn('python', [getPythonScriptPath()]);
   }else {
-    subpy = require("child_process").execFile(getPythonScriptPath2(), []);
+    subpy = require("child_process").execFile(getPythonScriptPath(), []);
   }
-
 
   //监听 Python 进程的标准输出
   subpy.stdout.on("data", (data) => {
     const output = data.toString();
     if (output.includes("Flask server is ready")) {
-      console.log("Flask server is ready, creating main window...");
+      console.log("Backend server is ready, creating main window...");
       createMainWindow(); // 在flask准备好后创建窗口
     }
   });
@@ -70,7 +55,7 @@ const startPythonSubprocess = () => {
 
 const killPythonSubprocesses = (main_pid) => {
   let python_processes_name = '';
-  if (PY_DIST_FOLDER === ''){
+  if (process.env.NODE_ENV === 'development') {
     python_processes_name = PYTHON_EXECUTABLE_NAME
   }else {
     python_processes_name = PY_MODULE.slice(0, -3) + ".exe"
