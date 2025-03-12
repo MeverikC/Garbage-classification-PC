@@ -8,6 +8,5 @@ node_modules
 out/
 build
 *.exe
-dist2
 dist
 app.spec
