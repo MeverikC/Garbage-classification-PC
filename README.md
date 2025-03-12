@@ -29,6 +29,9 @@ npm config set registry https://registry.npmmirror.com
 npm install
 ```
 
+### 2.3 下载模型到项目根目录
+[点此下载](http://s7sy8cpwf.hb-bkt.clouddn.com/garbage_classifier_best_EfficientNet-B4.pth)
+
 ## 3. 运行 
 1. `npm run dev` => 开发环境
 2. `npm run start` => 后端服务打成`.exe`文件后
