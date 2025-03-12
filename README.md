@@ -25,7 +25,8 @@ pip install -r .\requirements.txt
 ```bash
 npm install
 # 若报错执行以下
-npm install --save-dev electron --electron-mirror=https://npmmirror.com/mirrors/electron/
+npm config set registry https://registry.npmmirror.com
+npm install
 ```
 
 ## 3. 运行 
