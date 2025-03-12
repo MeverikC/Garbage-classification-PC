@@ -1,5 +1,19 @@
 # 垃圾分类桌面应用
 
+## 速览
+<table>
+  <tr>
+    <td align="center"><img src="/static/images/login.png" width="300px" alt="login" /><br>login</td>
+    <td align="center"><img src="/static/images/home.png" width="300px" alt="home" /><br>home</td>
+    <td align="center"><img src="/static/images/use_profile.png" width="300px" alt="home" />usage</td>
+  </tr>
+  <tr>
+    <td align="center"><img src="/static/images/uploads.png" width="300px" alt="login" /><br>upload</td>
+    <td align="center"><img src="/static/images/result.png" width="300px" alt="home" /><br>result</td>
+    <td align="center"><img src="/static/images/user_manage.png" width="300px" alt="home" />user</td>
+  </tr>
+</table>
+
 ## 1. 介绍
 1. 使用python+pytorch+efficientnet_b3实现
 2. web服务使用flask
