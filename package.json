@@ -3,45 +3,58 @@
   "version": "1.0.0",
   "description": "garbage-deskapp",
   "main": "main.js",
-  "config": {
-    "forge": {
-      "packageerConfig": {
-        "extraResource": ["dist"],
-        "icon": "./static/favicon.ico"
-      },
-      "makers": [
-        {
-          "name": "@electron-forge/maker-squirrel",
-          "config": {
-            "name": "garbage",
-            "setupIcon": "./static/favicon.ico"
-          }
-        }
-      ]
-    }
-  },
   "scripts": {
-    "start": "electron-forge start",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "package": "electron-forge package",
-    "make": "electron-forge make"
+    "start": "electron .",
+    "build": "cross-env NODE_ENV=production electron-builder"
   },
   "author": "MeverikC",
   "license": "MIT",
-  "devDependencies": {
-    "@electron-forge/cli": "^7.7.0",
-    "@electron-forge/maker-deb": "^7.7.0",
-    "@electron-forge/maker-rpm": "^7.7.0",
-    "@electron-forge/maker-squirrel": "^7.7.0",
-    "@electron-forge/maker-zip": "^7.7.0",
-    "@electron-forge/plugin-auto-unpack-natives": "^7.7.0",
-    "@electron-forge/plugin-fuses": "^7.7.0",
-    "@electron/fuses": "^1.8.0",
-    "electron": "^35.0.0"
-  },
   "dependencies": {
-    "electron-squirrel-startup": "^1.0.1",
-    "ps-tree": "^1.2.0",
-    "python-shell": "^5.0.0"
+    "ps-tree": "^1.2.0"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3",
+    "electron": "^35.0.1",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "productName": "GarbageSort",
+    "appId": "com.example.Garbage",
+    "copyright": "MeverikC",
+    "directories": {
+      "output": "out"
+    },
+    "files": [
+      "out/electron/**/*",
+      "node_modules/",
+      "package.json",
+      "main.js"
+    ],
+    "win": {
+      "icon": "static/favicon.ico",
+      "target": [
+        {
+          "target": "nsis"
+        }
+      ],
+      "verifyUpdateCodeSignature": false
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowElevation": true,
+      "allowToChangeInstallationDirectory": true,
+      "installerIcon": "./static/favicon.ico",
+      "uninstallerIcon": "./static/uninstall.ico",
+      "installerHeaderIcon": "./static/favicon.ico",
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "GarbageSort"
+    },
+    "extraResources": [
+      {
+        "from": "dist",
+        "to": "app/dist"
+      }
+    ]
   }
 }

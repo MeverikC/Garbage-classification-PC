@@ -35,7 +35,7 @@ const getPythonScriptPath2 = () => {
     return path.join(__dirname, PY_DIST_FOLDER, 'app.exe');
   }
   // 生产环境使用解压后的资源目录
-  return path.join(process.resourcesPath, 'dist', 'app.exe'); 
+  return path.join(process.resourcesPath, 'app', 'dist', 'app.exe');
 };
 
 const startPythonSubprocess = () => {

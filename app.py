@@ -37,10 +37,13 @@ login_manager.login_view = 'login'
 # JSON 数据存储路径
 DATA_FILE = "static/data/data.json"
 now = datetime.now().strftime('%Y-%m-%d')
+log_dir = 'log'
+if not os.path.exists(log_dir):
+    os.makedirs(log_dir)
 
 # 配置日志文件路径、格式及日志级别
 logging.basicConfig(
-    filename="log/app.log",  # 指定日志文件路径
+    filename=f"{log_dir}/app.log",  # 指定日志文件路径
     level=logging.INFO,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     datefmt="%Y-%m-%d %H:%M:%S"
