@@ -16,7 +16,7 @@ node: 20.9.0
 ### 2.1 后端服务依赖
 ```bash
 python -m venv .venv
-vnev\Scripts\activate
+.vnev\Scripts\activate
 python.exe -m pip install --upgrade pip
 pip install -r .\requirements.txt
 ```
