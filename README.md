@@ -119,4 +119,4 @@ package.json
 ```
 
 ## 5. 快速体验
-[点此下载](https://gitee.com/MeverikC/electron-flask/releases)
+[点此下载](https://gitee.com/MeverikC/Garbage-classification-PC/releases)
